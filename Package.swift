@@ -469,7 +469,11 @@ let package = Package(
         .define("DUCKDB_EXTENSION_PARQUET_LINKED"),
         .define("DUCKDB_EXTENSION_ICU_LINKED"),
         .define("DUCKDB_EXTENSION_JSON_LINKED"),
-        .define("DUCKDB_BUILD_LIBRARY")
+        .define("DUCKDB_BUILD_LIBRARY"),
+        // Release builds must define NDEBUG: DuckDB's D_ASSERT falls back to C assert(), which
+        // otherwise still compiles (and runs) its condition. On v2.1.0-dev84836 that breaks the
+        // release build outright (row_group_collection.cpp uses a debug-only variable).
+        .define("NDEBUG", .when(configuration: .release))
       ]
     ),
     .testTarget(
